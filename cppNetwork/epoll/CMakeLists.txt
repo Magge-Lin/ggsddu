@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 2.8)
+
+Project(EPOLL_SOCKET)
+
+SET(EPOLL_SOCKET_DIR epoll-socket.cpp)
+
+MESSAGE(STATUS "This is PROJECT_SOURCE Dir: " ${PROJECT_SOURCE_DIR})
+MESSAGE(STATUS "This is PROJECT_BINARY Dir: " ${PROJECT_BINARY_DIR})
+MESSAGE(STATUS "This is CMAKE_CURRENT_BINARY Dir: " ${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(epoll-socket ${EPOLL_SOCKET_DIR})
+
+install(TARGETS epoll-socket RUNTIME DESTINATION bin)

@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 2.8)
+
+Project(REACTOR_SOCKET)
+
+SET(REACTOR_SOCKET_DIR reactor-socket.cpp)
+
+MESSAGE(STATUS "This is PROJECT_SOURCE Dir: " ${PROJECT_SOURCE_DIR})
+MESSAGE(STATUS "This is PROJECT_BINARY Dir: " ${PROJECT_BINARY_DIR})
+MESSAGE(STATUS "This is CMAKE_CURRENT_BINARY Dir: " ${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(reactor-socket ${REACTOR_SOCKET_DIR})
+
+install(TARGETS reactor-socket RUNTIME DESTINATION bin)
