@@ -1,4 +1,4 @@
-#pragma __WORLD_H__
+#pragma once
 
 #include <stdio.h>
 

@@ -1,4 +1,4 @@
-#pragma __ZVNET__H_
+#pragma once
 
 #include<sys/socket.h>
 #include<cstring>

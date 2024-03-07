@@ -1,4 +1,4 @@
-#pragma __HELLO_H__
+#pragma once
 
 #include <stdio.h>
 
