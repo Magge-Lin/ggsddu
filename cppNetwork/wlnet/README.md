@@ -5,7 +5,7 @@ wlnet:
 
     
 编译：
-./linux_build.sh
+./build.sh
 
-调用动态库的test例子
+调用动态库/静态库的test/server_TCP.cc例子，并进行逐步的测试出百万并发量（希望电脑争点气~）。
 
