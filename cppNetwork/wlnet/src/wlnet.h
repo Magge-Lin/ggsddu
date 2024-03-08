@@ -14,7 +14,7 @@ using namespace std;
 
 #define         BUFFER_LENGTH           1024
 #define         EVENTS_LENGTH           1024
-#define		    errlog		            cout << __LINE__ << " "
+#define		    errlog		            cout << __FILE__<< " " <<__FUNCTION__<< " "<<__LINE__<< " "
 
 typedef int (*ZVCALLBACK)(int fd, int event, void* arg);
 
@@ -55,7 +55,7 @@ int recv_cb(int fd, int event, void* arg);
 int send_cb(int fd, int event, void* arg);
 
 int wl_init_reactor(wl_reactor_t* reactor);
-int wl_dest_reactor(wl_reactor_t* reactor);
+int wl_run_reactor(wl_reactor_t* reactor);
 int wl_dest_reactor(wl_reactor_t* reactor);
 int init_server(int port);
 int set_listener(wl_reactor_t* reactor, int fd, ZVCALLBACK cb);
