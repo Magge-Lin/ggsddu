@@ -56,6 +56,9 @@ ulimit -n 1024587    #临时修改的办法，可以修改系统文件进行修�
 		fs.file-max = 1048576
 		net.nf_conntrack_max = 1048576
 		net.netfilter.nf_conntrack_tcp_timeout_established = 1200
+
+    Error: /proc/sys/net/nf_conntrack_max no such file or directory
+    sudo modprobe ip_conntrack
 ```
 
 如截图 wlnet03.PNG 所示，建立了 80 多万个TCP链接后，服务器环境重启，勉强算是成功吧~
