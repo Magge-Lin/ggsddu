@@ -15,7 +15,7 @@
  
 #define MAX_BUFFER              128
 #define MAX_EPOLLSIZE   (384*1024)
-#define MAX_PORT                20
+#define MAX_PORT                100
  
 #define TIME_SUB_MS(tv1, tv2)  ((tv1.tv_sec - tv2.tv_sec) * 1000 + (tv1.tv_usec - tv2.tv_usec) / 1000)
  

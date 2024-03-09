@@ -1,6 +1,6 @@
 #!/bin/bash
-mkdir -p build_src
-cd build_src
+mkdir -p build
+cd build
 cmake ..
 make -j4
 sudo make install
