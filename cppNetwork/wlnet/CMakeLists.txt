@@ -1,4 +1,4 @@
-project(WLNET)
+project(wlnet)
 cmake_minimum_required(VERSION 2.8)
 
 #设置库文件路径
