@@ -177,7 +177,6 @@ int accept_cb(int fd, int events, void* arg)
         return -1;
     }
 
-
     struct sockaddr_in clientAddr;
     socklen_t clientlen = sizeof(clientAddr);
 
@@ -201,9 +200,8 @@ int accept_cb(int fd, int events, void* arg)
     ev.events = EPOLLIN;
 
     epoll_ctl(reactor->epfd, EPOLL_CTL_ADD, clientfd, &ev);
-    
-    return 1;
 
+    return 1;
 }
 
 int recv_cb(int fd, int events, void* arg)
@@ -213,6 +211,8 @@ int recv_cb(int fd, int events, void* arg)
         errlog<<"arg is NULL."<<std::endl;
         return -1;
     }
+    errlog<<"end."<<std::endl;
+
     
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, fd);
@@ -247,6 +247,9 @@ int recv_cb(int fd, int events, void* arg)
     ev.events = EPOLLOUT;
     epoll_ctl(reactor->epfd, EPOLL_CTL_MOD, fd, &ev);
 
+    
+    errlog<<"end."<<std::endl;
+
     return 1;
 
 }
@@ -258,7 +261,9 @@ int send_cb(int fd, int events, void* arg)
         errlog<<"arg is NULL."<<std::endl;
         return -1;
     }
+    errlog<<"start."<<std::endl;
 
+    
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, fd);
 
@@ -278,6 +283,9 @@ int send_cb(int fd, int events, void* arg)
     ev.events = EPOLLIN;
 
     epoll_ctl(reactor->epfd, EPOLL_CTL_MOD, fd, &ev);
+
+    
+    errlog<<"end."<<std::endl;
 
     return -1;
 

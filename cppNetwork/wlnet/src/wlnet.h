@@ -14,7 +14,7 @@ using namespace std;
 
 #define         BUFFER_LENGTH           1024
 #define         EVENTS_LENGTH           1024
-#define		    errlog		            cout << __FILE__<< " " <<__FUNCTION__<< " "<<__LINE__<< " "
+#define		    errlog		            cout << " " << pthread_self()<<" "<<__FUNCTION__<< " "<<__LINE__<< " "
 
 typedef int (*ZVCALLBACK)(int fd, int event, void* arg);
 
@@ -49,6 +49,8 @@ typedef struct wl_reactor_s
     wl_connblock_t* blockheader;
     
 }wl_reactor_t;
+
+ pthread_mutex_t m_mutex;
 
 int accept_cb(int fd, int event, void* arg);
 int recv_cb(int fd, int event, void* arg);

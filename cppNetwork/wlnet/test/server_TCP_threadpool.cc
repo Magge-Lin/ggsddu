@@ -1,14 +1,7 @@
 #include "wlnet.h"
 
-#define SERVER_PORT		8080
-#define SERVER_IP		"127.0.0.1"
-#define MAX_BUFFER		128
 #define MAX_EPOLLSIZE	100000
-#define MAX_THREAD		80
-#define MAX_PORT		100
-
-#define CPU_CORES_SIZE	8
-
+#define MAX_THREAD		10
 
 
 #define LL_ADD(item, list) \
@@ -168,15 +161,7 @@ void client_job(job_t *job)
 
     wl_connect_t* conn = wl_connect_idx(reactor, clientfd);
 
-    if(events & EPOLLIN)
-    {
-        conn->cb(clientfd, events, reactor);
-    }
-
-    if(events & EPOLLOUT)
-    {
-        conn->cb(clientfd, events, reactor);
-    }
+    conn->cb(clientfd, events, reactor);
 
 	free(rClient);
 	free(job);
@@ -185,11 +170,11 @@ void client_job(job_t *job)
 int wl_run_reactor(wl_reactor_t* reactor)
 {
 
-    struct epoll_event events[EVENTS_LENGTH] = {0};
+    struct epoll_event events[MAX_EPOLLSIZE] = {0};
 
     while (1)
     {
-        int nready = epoll_wait(reactor->epfd, events, EVENTS_LENGTH, -1);
+        int nready = epoll_wait(reactor->epfd, events, MAX_EPOLLSIZE, -1);
 
         for(int i = 0; i < nready; ++i)
         {
@@ -237,7 +222,6 @@ int main(int argc, char* argv[])
     }
     
     wl_run_reactor(&reactor);
-
 
     wl_dest_reactor(&reactor);
 
