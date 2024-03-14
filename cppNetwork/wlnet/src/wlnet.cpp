@@ -1,5 +1,8 @@
 #include "wlnet.h"
 
+#include <thread>
+#include <chrono>
+
 
 int wl_init_reactor(wl_reactor_t* reactor)
 {
@@ -180,11 +183,11 @@ int accept_cb(int fd, int events, void* arg)
     struct sockaddr_in clientAddr;
     socklen_t clientlen = sizeof(clientAddr);
 
-    int clientfd = accept(fd, (struct sockaddr*)&clientAddr, &clientlen);
-    if(clientfd <= 0)
+    int clientfd = 0;
+    errlog<<"start."<<std::endl;
+
+    while ((clientfd = accept(fd, (struct sockaddr*)&clientAddr, &clientlen)) <= 0)
     {
-        errlog<<"accept is err, sockfd:"<<fd<<std::endl;
-        return -1;
     }
 
     errlog<<"accept sockfd:"<<fd<<"     clientfd:"<<clientfd<<std::endl;
@@ -197,9 +200,10 @@ int accept_cb(int fd, int events, void* arg)
     
     struct epoll_event ev;
     ev.data.fd = clientfd;
-    ev.events = EPOLLIN;
+    ev.events = EPOLLIN | EPOLLET;
 
     epoll_ctl(reactor->epfd, EPOLL_CTL_ADD, clientfd, &ev);
+    errlog<<"end."<<std::endl;
 
     return 1;
 }
@@ -211,9 +215,8 @@ int recv_cb(int fd, int events, void* arg)
         errlog<<"arg is NULL."<<std::endl;
         return -1;
     }
-    errlog<<"end."<<std::endl;
+    errlog<<"start."<<std::endl;
 
-    
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, fd);
     int len = recv(fd, conn->rbuffer, conn->count, 0);
@@ -280,7 +283,7 @@ int send_cb(int fd, int events, void* arg)
     
     struct epoll_event ev;
     ev.data.fd = fd;
-    ev.events = EPOLLIN;
+    ev.events = EPOLLIN | EPOLLET;
 
     epoll_ctl(reactor->epfd, EPOLL_CTL_MOD, fd, &ev);
 

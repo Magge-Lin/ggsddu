@@ -55,6 +55,9 @@ int main(int argc, char* argv[])
     for (int i = 0; i < port_length; i++)
     {
         int sockfd = init_server(port + i);
+        // 设置为非阻塞模式
+        int flags = fcntl(sockfd, F_GETFL, 0);
+        fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
         portData->buff[i] = sockfd;
         set_listener(&reactor, sockfd, accept_cb);
     }
