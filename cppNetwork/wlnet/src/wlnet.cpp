@@ -183,13 +183,15 @@ int accept_cb(int fd, int events, void* arg)
     struct sockaddr_in clientAddr;
     socklen_t clientlen = sizeof(clientAddr);
 
-    int clientfd = 0;
     errlog<<"start."<<std::endl;
+    int clientfd = accept(fd, (struct sockaddr*)&clientAddr, &clientlen);
 
-    while ((clientfd = accept(fd, (struct sockaddr*)&clientAddr, &clientlen)) <= 0)
+    if (clientfd <= 0)
     {
-    }
+        errlog<<"end."<<std::endl;
 
+        return -1;
+    }
     errlog<<"accept sockfd:"<<fd<<"     clientfd:"<<clientfd<<std::endl;
 
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
