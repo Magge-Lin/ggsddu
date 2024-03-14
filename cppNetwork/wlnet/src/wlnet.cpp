@@ -1,6 +1,4 @@
 #include "wlnet.h"
-#include "threadpool.h"
-
 
 
 int wl_init_reactor(wl_reactor_t* reactor)
@@ -283,63 +281,4 @@ int send_cb(int fd, int events, void* arg)
 
     return -1;
 
-}
-
-void client_job(job_t *job) 
-{
-	client_t *rClient = (client_t*)job->user_data;
-	int clientfd = rClient->fd;
-
-	bzero(buffer, MAX_BUFFER);
-
-	int length = 0;
-	int ret = nRecv(clientfd, buffer, MAX_BUFFER, &length);
-	if (length > 0) 
-    {	
-		if (nRun || buffer[0] == 'a') 
-        {		
-			printf(" TcpRecv --> curfds : %d, buffer: %s\n", curfds, buffer);
-			
-			nSend(clientfd, buffer, strlen(buffer), 0);
-		}
-
-	} else if (ret == ENOTCONN) 
-    {
-		curfds --;
-		close(clientfd);
-	} 
-    else 
-    {
-		
-	}
-
-	free(rClient);
-	free(job);
-}
-
-int wl_run_reactor(wl_reactor_t* reactor)
-{
-
-    struct epoll_event events[EVENTS_LENGTH] = {0};
-
-    while (1)
-    {
-        int nready = epoll_wait(reactor->epfd, events, EVENTS_LENGTH, -1);
-
-        for(int i = 0; i < nready; ++i)
-        {
-            int connfd = events[i].data.fd;
-            wl_connect_t* conn = wl_connect_idx(reactor, connfd);
-
-            if(events[i].events & EPOLLIN)
-            {
-                conn->cb(connfd, events[i].events, reactor);
-            }
-
-            if(events[i].events & EPOLLOUT)
-            {
-                conn->cb(connfd, events[i].events, reactor);
-            }
-        }
-    }
 }

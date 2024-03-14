@@ -55,7 +55,6 @@ int recv_cb(int fd, int event, void* arg);
 int send_cb(int fd, int event, void* arg);
 
 int wl_init_reactor(wl_reactor_t* reactor);
-int wl_run_reactor(wl_reactor_t* reactor);
 int wl_dest_reactor(wl_reactor_t* reactor);
 int init_server(int port);
 int set_listener(wl_reactor_t* reactor, int fd, ZVCALLBACK cb);

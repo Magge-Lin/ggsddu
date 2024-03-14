@@ -11,6 +11,33 @@ typedef struct port_data_s
     int buff[];
 }port_data_t;
 
+int wl_run_reactor(wl_reactor_t* reactor)
+{
+
+    struct epoll_event events[EVENTS_LENGTH] = {0};
+
+    while (1)
+    {
+        int nready = epoll_wait(reactor->epfd, events, EVENTS_LENGTH, -1);
+
+        for(int i = 0; i < nready; ++i)
+        {
+            int connfd = events[i].data.fd;
+            wl_connect_t* conn = wl_connect_idx(reactor, connfd);
+
+            if(events[i].events & EPOLLIN)
+            {
+                conn->cb(connfd, events[i].events, reactor);
+            }
+
+            if(events[i].events & EPOLLOUT)
+            {
+                conn->cb(connfd, events[i].events, reactor);
+            }
+        }
+    }
+}
+
 
 int main(int argc, char* argv[])
 {
