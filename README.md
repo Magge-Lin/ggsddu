@@ -13,7 +13,9 @@
 ```
 C++ 高性能网络编程：SOCKET API、poll、epoll、select、reactor的用法
 
-以及应用：zvnet高性能网络框架，编译成库并调用，测试zvnet库的服务器百万并发性能。
+以及应用：
+    wlnet 高性能网络框架，编译成库并调用，测试 wlnet 库的服务器百万并发性能。
+    NtyCo 协程
 ```
 
 * tools：
