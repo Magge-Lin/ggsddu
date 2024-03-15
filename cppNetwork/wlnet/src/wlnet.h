@@ -13,7 +13,7 @@
 using namespace std;
 
 #define         BUFFER_LENGTH           1024
-#define         EVENTS_LENGTH           1024
+#define         EVENTS_LENGTH           10240
 #define		    errlog		            cout << " " << pthread_self()<<" "<<__FUNCTION__<< " "<<__LINE__<< " "
 pthread_t pid;
 

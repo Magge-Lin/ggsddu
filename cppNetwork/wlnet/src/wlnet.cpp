@@ -188,10 +188,11 @@ int accept_cb(int fd, int events, void* arg)
     int clientfd = accept(fd, (struct sockaddr*)&clientAddr, &clientlen);
     if (clientfd <= 0)
     {
+        errlog<<"accept is err. sockfd  is : "<<fd<<std::endl;
         return -1;
     }
     
-    errlog<<"accept sockfd:"<<fd<<"     clientfd:"<<clientfd<<std::endl;
+    // errlog<<"accept sockfd:"<<fd<<"     clientfd:"<<clientfd<<std::endl;
 
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, clientfd);
@@ -222,6 +223,7 @@ int recv_cb(int fd, int events, void* arg)
     int len = recv(fd, conn->rbuffer, conn->count, 0);
     if(len < 0)
     {
+        errlog<<"recv is err. sockfd  is : "<<fd<<std::endl;
         return -1;
     }
     else if(len == 0)
@@ -239,7 +241,7 @@ int recv_cb(int fd, int events, void* arg)
         return 1;
     }
 
-    errlog<<"recv:"<<conn->rbuffer<<std::endl;
+    // errlog<<"recv:"<<conn->rbuffer<<std::endl;
 
     conn->rc = len;
     conn->cb = send_cb;
@@ -264,13 +266,16 @@ int send_cb(int fd, int events, void* arg)
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, fd);
 
-    int len = send(fd, conn->rbuffer, conn->rc, 0);
+    const char str[] = "hello this is server.";
+
+    int len = send(fd, str, strlen(str), 0);
     if(len <= 0)
     {
+        errlog<<"send is err. sockfd  is : "<<fd<<std::endl;
         return -1;
     }
 
-    memset(conn->rbuffer, 0, conn->rc);
+    // errlog<<"send :"<<str<<std::endl;
 
     conn->cb = recv_cb;
     
