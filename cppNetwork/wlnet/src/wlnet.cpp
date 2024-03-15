@@ -192,7 +192,7 @@ int accept_cb(int fd, int events, void* arg)
         return -1;
     }
     
-    // errlog<<"accept sockfd:"<<fd<<"     clientfd:"<<clientfd<<std::endl;
+    errlog<<"accept sockfd:"<<fd<<"     clientfd:"<<clientfd<<std::endl;
 
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, clientfd);
@@ -241,7 +241,7 @@ int recv_cb(int fd, int events, void* arg)
         return 1;
     }
 
-    // errlog<<"recv:"<<conn->rbuffer<<std::endl;
+    errlog<<"recv:"<<conn->rbuffer<<std::endl;
 
     conn->rc = len;
     conn->cb = send_cb;
@@ -275,7 +275,7 @@ int send_cb(int fd, int events, void* arg)
         return -1;
     }
 
-    // errlog<<"send :"<<str<<std::endl;
+    errlog<<"send :"<<str<<std::endl;
 
     conn->cb = recv_cb;
     

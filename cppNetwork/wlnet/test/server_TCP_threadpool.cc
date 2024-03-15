@@ -181,26 +181,18 @@ int wl_run_reactor(wl_reactor_t* reactor)
         {
             int connfd = events[i].data.fd;
             wl_connect_t* conn = wl_connect_idx(reactor, connfd);
-			if (std::find(sockfds.begin(), sockfds.end(), connfd) != sockfds.end())
-			{
-				pid = pthread_self();
-				
-				conn->cb(connfd, events[i].events, reactor);
-			}
-			else
-			{
-				client_t *rClient = (client_t*)malloc(sizeof(client_t));
-				memset(rClient, 0, sizeof(client_t));				
-				rClient->fd = connfd;
-				rClient->reactor = reactor;
-				rClient->events = events[i].events;
-				rClient->conn = conn;
-				
-				job_t *job = (job_t*)malloc(sizeof(job_t));
-				job->job_function = client_job;
-				job->user_data = rClient;
-				workqueue_add_job(&workqueue, job);
-			}
+			
+			client_t *rClient = (client_t*)malloc(sizeof(client_t));
+			memset(rClient, 0, sizeof(client_t));				
+			rClient->fd = connfd;
+			rClient->reactor = reactor;
+			rClient->events = events[i].events;
+			rClient->conn = conn;
+			
+			job_t *job = (job_t*)malloc(sizeof(job_t));
+			job->job_function = client_job;
+			job->user_data = rClient;
+			workqueue_add_job(&workqueue, job);
         }
     }
 }
