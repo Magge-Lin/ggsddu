@@ -1,8 +1,9 @@
+#include <vector>
+#include <algorithm>
 #include "wlnet.h"
 
-#define MAX_EPOLLSIZE	100000
-#define MAX_THREAD		8
-
+#define MAX_EPOLLSIZE	102400
+#define MAX_THREAD		4
 
 #define LL_ADD(item, list) \
 { \
@@ -166,6 +167,8 @@ void client_job(job_t *job)
 	free(job);
 }
 
+std::vector<int> sockfds;
+
 int wl_run_reactor(wl_reactor_t* reactor)
 {
 
@@ -173,23 +176,23 @@ int wl_run_reactor(wl_reactor_t* reactor)
 
     while (1)
     {
-        int nready = epoll_wait(reactor->epfd, events, MAX_EPOLLSIZE, -1);
-
+        int nready = epoll_wait(reactor->epfd, events, MAX_EPOLLSIZE, 4);
         for(int i = 0; i < nready; ++i)
         {
             int connfd = events[i].data.fd;
             wl_connect_t* conn = wl_connect_idx(reactor, connfd);
-            client_t *rClient = (client_t*)malloc(sizeof(client_t));
-            memset(rClient, 0, sizeof(client_t));				
-            rClient->fd = connfd;
-            rClient->reactor = reactor;
-            rClient->events = events[i].events;
-            rClient->conn = conn;
-            
-            job_t *job = (job_t*)malloc(sizeof(job_t));
-            job->job_function = client_job;
-            job->user_data = rClient;
-            workqueue_add_job(&workqueue, job);
+			
+			client_t *rClient = (client_t*)malloc(sizeof(client_t));
+			memset(rClient, 0, sizeof(client_t));				
+			rClient->fd = connfd;
+			rClient->reactor = reactor;
+			rClient->events = events[i].events;
+			rClient->conn = conn;
+			
+			job_t *job = (job_t*)malloc(sizeof(job_t));
+			job->job_function = client_job;
+			job->user_data = rClient;
+			workqueue_add_job(&workqueue, job);
         }
     }
 }
@@ -200,6 +203,7 @@ typedef struct port_data_s
 
     int buff[];
 }port_data_t;
+	
 
 int main(int argc, char* argv[])
 {
@@ -224,6 +228,7 @@ int main(int argc, char* argv[])
         fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
 
         portData->buff[i] = sockfd;
+		sockfds.push_back(sockfd);
         set_listener(&reactor, sockfd, accept_cb);
     }
     

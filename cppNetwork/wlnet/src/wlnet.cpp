@@ -98,7 +98,7 @@ int set_listener(wl_reactor_t* reactor, int fd, ZVCALLBACK cb)
 
     struct epoll_event ev;
     ev.data.fd = fd;
-    ev.events = EPOLLIN;
+    ev.events = EPOLLIN | EPOLLET;
 
     epoll_ctl(reactor->epfd, EPOLL_CTL_ADD, fd, &ev);
 
@@ -115,22 +115,22 @@ int wl_connect_block(wl_reactor_t* reactor)
     }
 
     wl_connblock_t* blk = reactor->blockheader;
-    while (blk->next)
+    while (blk->next != NULL)
     {
         blk = blk->next;
     }
 
-    wl_connblock_t* block = (wl_connblock_t*)malloc(sizeof(wl_connblock_t) + EVENTS_LENGTH*sizeof(wl_connect_t));
-    if(!block)
+    wl_connblock_t* connblock = (wl_connblock_t*)malloc(sizeof(wl_connblock_t) + EVENTS_LENGTH*sizeof(wl_connect_t));
+    if(!connblock)
     {
         errlog<<"malloc is err."<<std::endl;
         return -1;
     }
 
-    block->block = (wl_connect_t*)(block + 1);
-    block->next = NULL;
+    connblock->block = (wl_connect_t*)(connblock + 1);
+    connblock->next = NULL;
 
-    blk->next = block;
+    blk->next = connblock;
     reactor->blk++;
     
     return 1;
@@ -139,6 +139,7 @@ int wl_connect_block(wl_reactor_t* reactor)
 
 wl_connect_t* wl_connect_idx(wl_reactor_t* reactor, int fd)
 {
+    pthread_mutex_lock(&m_mutex);  // 加锁
     if(!reactor || !reactor->blockheader)
     {
         errlog<<"reactor is NULL or reactor->blockheader is NULL."<<std::endl;
@@ -167,6 +168,7 @@ wl_connect_t* wl_connect_idx(wl_reactor_t* reactor, int fd)
     {
         connblock = connblock->next;
     }
+    pthread_mutex_unlock(&m_mutex);  // 加锁
 
     return &connblock->block[fd%EVENTS_LENGTH];
     
@@ -183,6 +185,7 @@ int accept_cb(int fd, int events, void* arg)
     struct sockaddr_in clientAddr;
     socklen_t clientlen = sizeof(clientAddr);
 
+<<<<<<< HEAD
     errlog<<"start."<<std::endl;
     int clientfd = accept(fd, (struct sockaddr*)&clientAddr, &clientlen);
 
@@ -192,10 +195,20 @@ int accept_cb(int fd, int events, void* arg)
 
         return -1;
     }
+=======
+    int clientfd = accept(fd, (struct sockaddr*)&clientAddr, &clientlen);
+    if (clientfd <= 0)
+    {
+        errlog<<"accept is err. sockfd  is : "<<fd<<std::endl;
+        return -1;
+    }
+    
+>>>>>>> 50b4b0b2567ac79a2fe8636e6690cbb26dbf3fc7
     errlog<<"accept sockfd:"<<fd<<"     clientfd:"<<clientfd<<std::endl;
 
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, clientfd);
+
     conn->fd = clientfd;
     conn->count = BUFFER_LENGTH;
     conn->cb = recv_cb;
@@ -205,7 +218,6 @@ int accept_cb(int fd, int events, void* arg)
     ev.events = EPOLLIN | EPOLLET;
 
     epoll_ctl(reactor->epfd, EPOLL_CTL_ADD, clientfd, &ev);
-    errlog<<"end."<<std::endl;
 
     return 1;
 }
@@ -217,14 +229,13 @@ int recv_cb(int fd, int events, void* arg)
         errlog<<"arg is NULL."<<std::endl;
         return -1;
     }
-    errlog<<"start."<<std::endl;
 
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, fd);
     int len = recv(fd, conn->rbuffer, conn->count, 0);
     if(len < 0)
     {
-        errlog<<"recv is err."<<std::endl;
+        errlog<<"recv is err. sockfd  is : "<<fd<<std::endl;
         return -1;
     }
     else if(len == 0)
@@ -249,12 +260,9 @@ int recv_cb(int fd, int events, void* arg)
 
     struct epoll_event ev;
     ev.data.fd = fd;
-    ev.events = EPOLLOUT;
+    ev.events = EPOLLOUT | EPOLLET;
     epoll_ctl(reactor->epfd, EPOLL_CTL_MOD, fd, &ev);
-
     
-    errlog<<"end."<<std::endl;
-
     return 1;
 
 }
@@ -266,20 +274,20 @@ int send_cb(int fd, int events, void* arg)
         errlog<<"arg is NULL."<<std::endl;
         return -1;
     }
-    errlog<<"start."<<std::endl;
-
     
     wl_reactor_t* reactor = (wl_reactor_t*)arg;
     wl_connect_t* conn = wl_connect_idx(reactor, fd);
 
-    int len = send(fd, conn->rbuffer, conn->rc, 0);
+    const char str[] = "hello this is server.";
+
+    int len = send(fd, str, strlen(str), 0);
     if(len <= 0)
     {
-        errlog<<"send is err."<<std::endl;
+        errlog<<"send is err. sockfd  is : "<<fd<<std::endl;
         return -1;
     }
 
-    memset(conn->rbuffer, 0, conn->rc);
+    errlog<<"send :"<<str<<std::endl;
 
     conn->cb = recv_cb;
     
@@ -288,10 +296,7 @@ int send_cb(int fd, int events, void* arg)
     ev.events = EPOLLIN | EPOLLET;
 
     epoll_ctl(reactor->epfd, EPOLL_CTL_MOD, fd, &ev);
-
     
-    errlog<<"end."<<std::endl;
-
     return -1;
 
 }

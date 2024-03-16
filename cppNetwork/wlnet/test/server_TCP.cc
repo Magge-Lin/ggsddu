@@ -18,7 +18,7 @@ int wl_run_reactor(wl_reactor_t* reactor)
 
     while (1)
     {
-        int nready = epoll_wait(reactor->epfd, events, EVENTS_LENGTH, -1);
+        int nready = epoll_wait(reactor->epfd, events, EVENTS_LENGTH, 5);
 
         for(int i = 0; i < nready; ++i)
         {
