@@ -3,9 +3,9 @@
 ## 池组件：
     1、线程池   thread_pool
 
-    2、内存池
+    2、内存池   mem_pool
 
-    3、mysql连接池
+    3、mysql连接池  mysql_pool
 
 ## 高性能组件 ：
     1、原子操作
