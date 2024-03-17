@@ -49,13 +49,13 @@
 
 ## 3. 协程的 `struct coroutine` 定义
 ```c
-typedef enum _co_status{
+typedef enum _wly_co_status{
     CO_NEW,         // 新建
     CO_READY,       // 就绪
     CO_WAIT,        // 等待
     CO_SLEEP,       // 超时
-    CO_EXIT,        // 退出
-}co_status_t;
+    CO_EXIT        // 退出
+}wly_co_status_t;
 
 struct coroutine {
     int coid;							// 协程 Id
@@ -64,7 +64,7 @@ struct coroutine {
     void *arg;							// 入口函数的参数
     void *stack;                        // 独立栈（隔离性好，内存利用率不高），共享栈(内存利用率高，隔离性不好)      这里使用独立栈
     size_t size;                        // 栈的大小
-    co_status_t status;                 // 栈的状态
+    co_status_t status;                 // 协程的状态
 
     queue_node(coroutine) ready_q;      // 就绪队列     使用队列结构，先进先出特性
     rbtree_node(coroutine) wait_t;      // 等待队列     使用红黑树，需要根据时长进行排序
