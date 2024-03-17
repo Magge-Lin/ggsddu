@@ -6,7 +6,7 @@
 > select
 > reactor
 > wlnet	百万并发服务器，测试 & linux 系统调优
-> NtyCo
+> wlyCo
 > DPDK
 > io_uring
 
@@ -18,7 +18,7 @@ update:
     新增线程池的调用，recv、send使用多线程调用。
 ```
 
-## NtyCo
+## wlyCo
 
 ```
 协程框架的学习与应用
